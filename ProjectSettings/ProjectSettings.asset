@@ -718,11 +718,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: a65143ed-648d-4ac7-863f-8a27d1adffb6
+  cloudProjectId: 4174b852-35c6-4130-a36b-4cdba51fa42c
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Sky Surge 2025-11-09_01-56-41
-  organizationId: unity_9932f1c188f01254bf8f
+  projectName: GI453_FinalProject_Test1
+  organizationId: athiwat7215
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
