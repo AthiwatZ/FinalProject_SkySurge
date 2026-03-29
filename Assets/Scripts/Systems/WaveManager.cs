@@ -15,8 +15,8 @@ public class WaveManager : MonoBehaviour
     {
         if (spawning) return;
         WaveIndex++;
-        GameManager.I.ui.UpdateHUD(GameManager.I.player.hp, GameManager.I.player.maxHp, 
-            GameManager.I.player.lv, GameManager.I.player.exp, 
+        GameManager.I.ui.UpdateHUD(GameManager.I.player.hp, GameManager.I.player.maxHp,
+            GameManager.I.player.lv, GameManager.I.player.exp,
             GameManager.I.player.ExpToNextLevel(), WaveIndex, GameManager.I.score);
         StartCoroutine(SpawnWaveRoutine(GetRandomPreset()));
         StartCoroutine(CheckWaveClear());
@@ -61,13 +61,26 @@ public class WaveManager : MonoBehaviour
         {
             if (!spawning && enemyAlive <= 0)
             {
-                yield return new WaitForSeconds(1.0f);
+                if (AnalyticsManager.I != null && GameManager.I != null && GameManager.I.player != null)
+                {
+                    AnalyticsManager.I.LogWaveComplete(
+                        WaveIndex,
+                        GameManager.I.player.lv
+                    );
+                }
+
+                yield return new WaitForSeconds(1f);
                 StartNextWave();
                 yield break;
             }
 
             yield return null;
         }
+    }
+
+    public void SetWave(int wave)
+    {
+        WaveIndex = wave;
     }
 }
 

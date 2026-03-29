@@ -100,6 +100,13 @@ public class Player : MonoBehaviour, IHitTarget
         GameManager.I.End();
         gameObject.SetActive(false);
     }
+    public void Revive()
+    {
+        hp = maxHp;
+        weapon.enabled = true;
+        gameObject.SetActive(true);
+    }
+
     public int ExpToNextLevel()
     {
         return 5 + (lv - 1) * 5;

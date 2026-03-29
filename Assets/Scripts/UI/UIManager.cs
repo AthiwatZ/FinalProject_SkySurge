@@ -59,6 +59,12 @@ public class UIManager : MonoBehaviour
         scoreText.text = $"Score: {score}";
     }
 
+    public void HideGameOver()
+    {
+         if (gameOverPanel != null)
+        gameOverPanel.SetActive(false);
+    }
+
     [Header("Upgrade UI")]
     public GameObject upgradePanel;
     public Button[] cardButtons;
@@ -172,14 +178,54 @@ public class UIManager : MonoBehaviour
 
     public void OnClickRestart()
     {
+        if (AnalyticsManager.I != null && GameManager.I != null)
+        {
+            AnalyticsManager.I.LogGameEndChoice(
+                "retry",
+                GameManager.I.lastWaveBeforeDeath,
+                GameManager.I.lastPlayerLevelBeforeDeath,
+                false
+            );
+        }
+
         Time.timeScale = 1f;
-        GameManager.I.Restart();
+        PauseMenu.isPaused = false;
+
+        if (GameManager.I != null)
+            GameManager.I.Restart();
+        else
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+            );
     }
 
     public void OnClickMenu()
     {
+        if (AnalyticsManager.I != null && GameManager.I != null)
+        {
+            AnalyticsManager.I.LogGameEndChoice(
+                "menu",
+                GameManager.I.lastWaveBeforeDeath,
+                GameManager.I.lastPlayerLevelBeforeDeath,
+                false
+            );
+        }
+
         Time.timeScale = 1f;
+        PauseMenu.isPaused = false;
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
+    public void OnClickRevive()
+    {
+        if (AdsManager.I != null)
+        {
+            AdsManager.I.ShowAd();
+        }
+        else
+        {
+            Debug.LogWarning("AdsManager ไม่พร้อม");
+        }
     }
 
     public void PlayButtonClick()

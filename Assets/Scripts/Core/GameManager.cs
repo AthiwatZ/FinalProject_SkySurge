@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     public Player player;
     public int score;
 
+    public int lastWaveBeforeDeath;
+    public int lastPlayerLevelBeforeDeath;
+
     void Awake()
     {
         I = this;
@@ -34,9 +37,37 @@ public class GameManager : MonoBehaviour
         if (state == GameState.GameOver) return;
         state = GameState.GameOver;
 
+        lastWaveBeforeDeath = waveMgr.WaveIndex;
+        lastPlayerLevelBeforeDeath = player.lv;
+
+        if (AnalyticsManager.I != null)
+        {
+            AnalyticsManager.I.LogWaveFail(
+                waveMgr.WaveIndex,
+                player.lv
+            );
+        }
+
         Time.timeScale = 0f;
         waveMgr.StopWave();
         ui.ShowGameOver(score);
+    }
+
+    public void RevivePlayer()
+    {
+        Time.timeScale = 1f;
+        PauseMenu.isPaused = false;
+
+        if (player != null)
+            player.Revive();
+
+        if (waveMgr != null)
+            waveMgr.SetWave(lastWaveBeforeDeath);
+
+        if (ui != null)
+            ui.HideGameOver();
+
+        state = GameState.Playing;
     }
 
     public void Restart()
