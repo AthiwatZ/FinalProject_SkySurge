@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour, IHitTarget
     public int hp = 30;
     public int baseHp = 30;
     public int atk = 8;
-    public float moveSpeed = 5f;
+    public float moveSpeed = 10f;
     public int rewardExp = 1;
     public int scoreValue = 1;
 
