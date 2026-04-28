@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
     public AudioSource uiAudioSource;
     public AudioClip buttonClickSfx;
 
+    [Header("Mobile Controls")]
+    public GameObject mobileControlsPanel;
+
     Color GetColor(CardRarity r)
     {
         switch (r)
@@ -55,6 +58,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver(int score)
     {
+        HideMobileControls();
         gameOverPanel.SetActive(true);
         scoreText.text = $"Score: {score}";
     }
@@ -63,6 +67,7 @@ public class UIManager : MonoBehaviour
     {
          if (gameOverPanel != null)
         gameOverPanel.SetActive(false);
+        ShowMobileControls();
     }
 
     [Header("Upgrade UI")]
@@ -123,6 +128,18 @@ public class UIManager : MonoBehaviour
             }
         }
 
+    }
+
+    public void ShowMobileControls()
+    {
+        if (mobileControlsPanel != null)
+            mobileControlsPanel.SetActive(true);
+    }
+
+    public void HideMobileControls()
+    {
+        if (mobileControlsPanel != null)
+            mobileControlsPanel.SetActive(false);
     }
 
     IEnumerator FadeIn()

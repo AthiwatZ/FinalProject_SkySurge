@@ -68,6 +68,8 @@ public class GameManager : MonoBehaviour
             ui.HideGameOver();
 
         state = GameState.Playing;
+
+        waveMgr.StartNextWave();
     }
 
     public void Restart()

@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour, IHitTarget
     public int hp = 30;
     public int baseHp = 30;
     public int atk = 8;
-    public float moveSpeed = 10f;
+    public float moveSpeed = 5f;
     public int rewardExp = 1;
     public int scoreValue = 1;
 
@@ -52,7 +52,7 @@ public class Enemy : MonoBehaviour, IHitTarget
     {
         hp = baseHp + (int)(playerLv * 2 + waveIdx * 3);
         atk = 8 + waveIdx;
-        moveSpeed = 2.0f + 0.1f * waveIdx;
+        moveSpeed = 6f + 0.3f * waveIdx;
     }
 
     public void TakeDamage(int amount)

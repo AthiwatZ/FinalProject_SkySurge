@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Advertisements;
 
-public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsShowListener
+public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
 {
     public static AdsManager I;
 
@@ -14,6 +14,7 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
     private string gameId;
     private string adUnitId;
     private bool isInitialized = false;
+    private bool isAdLoaded;
 
     void Awake()
     {
@@ -53,6 +54,15 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
         Advertisement.Initialize(gameId, testMode, this);
     }
 
+    public void LoadRewardedAd()
+    {
+        if (!isInitialized) return;
+
+        isAdLoaded = false;
+        Advertisement.Load(rewardedAdUnitIdAndroid, this);
+        Debug.Log("Loading rewarded ad...");
+    }
+
     public void ShowAd()
     {
         if (!isInitialized)
@@ -61,13 +71,36 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
             return;
         }
 
+        if (!isAdLoaded)
+        {
+            Debug.LogWarning("Ad not loaded yet, loading now...");
+            LoadRewardedAd();
+            return;
+        }
+
         Advertisement.Show(adUnitId, this);
+    }
+
+    public void OnUnityAdsAdLoaded(string adUnitId)
+    {
+        if (adUnitId == rewardedAdUnitIdAndroid)
+        {
+            isAdLoaded = true;
+            Debug.Log("Rewarded ad loaded");
+        }
+    }
+
+    public void OnUnityAdsFailedToLoad(string adUnitId, UnityAdsLoadError error, string message)
+    {
+        isAdLoaded = false;
+        Debug.LogError($"Ad load failed: {adUnitId} | {error} | {message}");
     }
 
     public void OnInitializationComplete()
     {
         isInitialized = true;
         Debug.Log("Ads initialize สำเร็จ");
+        LoadRewardedAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
@@ -78,6 +111,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
 
     public void OnUnityAdsShowComplete(string unityAdsAdUnitId, UnityAdsShowCompletionState showCompletionState)
     {
+        isAdLoaded = false;
+
         if (unityAdsAdUnitId != adUnitId) return;
         if (showCompletionState != UnityAdsShowCompletionState.COMPLETED) return;
 
@@ -89,6 +124,7 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
                 GameManager.I.lastPlayerLevelBeforeDeath,
                 true
             );
+            LoadRewardedAd();
         }
 
         if (GameManager.I != null)
@@ -99,7 +135,9 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnity
 
     public void OnUnityAdsShowFailure(string unityAdsAdUnitId, UnityAdsShowError error, string message)
     {
+        isAdLoaded = false;
         Debug.LogError($"Show Ads fail: {error} - {message}");
+        LoadRewardedAd();
     }
 
     public void OnUnityAdsShowStart(string unityAdsAdUnitId)

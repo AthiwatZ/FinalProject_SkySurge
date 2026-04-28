@@ -4,7 +4,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class Weapon : MonoBehaviour
 {
     public GameObject projectilePrefab;
-    public float fireRate = 0.5f;
+    public float fireRate = 0.1f;
     float cd;
 
     public AudioSource weaponAudio;

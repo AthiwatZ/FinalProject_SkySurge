@@ -1,7 +1,5 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Player : MonoBehaviour, IHitTarget
 {
@@ -15,6 +13,11 @@ public class Player : MonoBehaviour, IHitTarget
     [Header("Refs")]
     public Weapon weapon;
     Rigidbody2D rb;
+
+    [Header("Mobile Controls")]
+    public VirtualJoystick joystick;
+    public FireButton fireButton;
+    public UnityEngine.Transform firePoint;
 
     [Header("Audio")]
     public AudioSource audioSource;
@@ -30,46 +33,50 @@ public class Player : MonoBehaviour, IHitTarget
 
     void Update()
     {
-        if (GameManager.I.state != GameState.Playing) return;
+        /*if (GameManager.I.state != GameState.Playing) return;
 
         // เคลื่อนที่
-        rb.linearVelocity = moveInput * moveSpeed;
+        rb.linearVelocity = moveInput * moveSpeed;*/
 
-        RotateTowardMouse();
+        if (GameManager.I.state != GameState.Playing) return;
 
-        // ยิงเมื่อกดคลิกซ้าย
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        Vector2 input = joystick != null ? joystick.Direction : moveInput;
+
+        rb.linearVelocity = input * moveSpeed;
+
+        if (input.sqrMagnitude > 0.01f)
         {
-            ShootAtMouse();
+            RotateToDirection(input);
         }
-    }
 
-    void ShootAtMouse()
-    {
-        // 1) ตำแหน่งเมาส์บนโลก (world)
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-
-        // 2) ทิศทางจาก player → เมาส์
-        Vector2 dir = (mousePos - (Vector2)transform.position).normalized;
-
-        // 3) ยิง
-        weapon.Fire(transform.position, dir);
-    }
-
-    void RotateTowardMouse()
-    {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Vector2 dir = mousePos - (Vector2)transform.position;
-
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        if (fireButton != null && fireButton.IsHolding)
+        {
+            FireForward();
+        }
     }
 
     // New Input System event (PlayerInput)
     public void OnMove(InputAction.CallbackContext ctx)
     {
         moveInput = ctx.ReadValue<Vector2>();
+    }
+
+    void RotateToDirection(Vector2 dir)
+    {
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        // ถ้าหน้ายาน sprite หันขึ้น ให้ใช้ -90f
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    }
+
+    void FireForward()
+    {
+        if (weapon == null) return;
+
+        Vector2 origin = firePoint != null ? firePoint.position : transform.position;
+        Vector2 dir = transform.up;
+
+        weapon.Fire(origin, dir);
     }
 
     public void TakeDamage(int amount)

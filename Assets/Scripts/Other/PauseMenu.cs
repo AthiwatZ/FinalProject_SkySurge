@@ -17,6 +17,8 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f;
         isPaused = true;
         GameManager.I.state = GameState.Paused;
+
+        GameManager.I.ui.HideMobileControls();
     }
 
     public void Resume()
@@ -25,6 +27,8 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         isPaused = false;
         GameManager.I.state = GameState.Playing;
+
+        GameManager.I.ui.ShowMobileControls();
     }
 
     public void GoToMenu()
